@@ -74,7 +74,7 @@ Flask_Blog_Application_Demo/
 
 **Clone the repository:**
 ```sh
-git clone https://github.com/your-username/Flask_Blog_Application_Demo.git
+git clone https://github.com/bchaitanya92/Flask_Blog_Application_Demo.git
 cd Flask_Blog_Application_Demo
 ```
 
