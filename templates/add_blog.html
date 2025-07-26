@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block title %}Blog App - Add New Blog{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="page-title">
+            <i class="fas fa-plus-circle me-3"></i>Create New Blog
+        </h1>
+        <p class="lead text-white-50">Share your thoughts and stories with the world</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <form method="POST" id="blogForm" novalidate>
+                    <!-- Author Information Section -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">
+                            <i class="fas fa-user me-2 text-primary"></i>Author Information
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="author_name" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Author Name *
+                                </label>
+                                <input type="text" class="form-control" id="author_name" name="author_name" required 
+                                       placeholder="Enter your full name">
+                                <div class="invalid-feedback">
+                                    Please provide a valid author name.
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="author_email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>Author Email *
+                                </label>
+                                <input type="email" class="form-control" id="author_email" name="author_email" required 
+                                       placeholder="your.email@example.com">
+                                <div class="invalid-feedback">
+                                    Please provide a valid email address.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Blog Content Section -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">
+                            <i class="fas fa-edit me-2 text-primary"></i>Blog Content
+                        </h4>
+                        
+                        <div class="mb-3">
+                            <label for="blog_title" class="form-label">
+                                <i class="fas fa-heading me-1"></i>Blog Title *
+                            </label>
+                            <input type="text" class="form-control" id="blog_title" name="blog_title" required 
+                                   placeholder="Enter an engaging title for your blog" maxlength="100">
+                            <div class="form-text">
+                                <span id="titleCount">0</span>/100 characters
+                            </div>
+                            <div class="invalid-feedback">
+                                Please provide a compelling blog title.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="blog_content" class="form-label">
+                                <i class="fas fa-file-alt me-1"></i>Blog Content *
+                            </label>
+                            <textarea class="form-control" id="blog_content" name="blog_content" rows="8" required 
+                                      placeholder="Share your story, thoughts, or insights here..." maxlength="5000"></textarea>
+                            <div class="form-text">
+                                <span id="contentCount">0</span>/5000 characters
+                            </div>
+                            <div class="invalid-feedback">
+                                Please write some meaningful content for your blog.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="blog_date" class="form-label">
+                                <i class="fas fa-calendar-alt me-1"></i>Publication Date *
+                            </label>
+                            <input type="date" class="form-control" id="blog_date" name="blog_date" required>
+                            <div class="form-text">
+                                Select when you want this blog to be published
+                            </div>
+                            <div class="invalid-feedback">
+                                Please select a valid publication date.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blog Preview Section -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">
+                            <i class="fas fa-eye me-2 text-primary"></i>Preview
+                        </h4>
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="previewContent">
+                                    <div class="blog-meta mb-3">
+                                        <div class="author-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold" id="previewAuthor">Author Name</div>
+                                            <small class="text-muted" id="previewDate">Publication Date</small>
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title" id="previewTitle">Your Blog Title Will Appear Here</h5>
+                                    <p class="card-text" id="previewText">Your blog content will be previewed here as you type...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('blogs') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-primary me-2" onclick="saveDraft()">
+                                <i class="fas fa-save me-2"></i>Save Draft
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Publish Blog
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tips Sidebar -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>Writing Tips
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Keep your title clear and engaging
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Start with a compelling introduction
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Use short paragraphs for better readability
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Include personal experiences or examples
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            End with a strong conclusion
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-chart-line text-info me-2"></i>Blog Stats
+                    </h5>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="fw-bold">{{ range(50, 200)|random }}</div>
+                            <small class="text-muted">Total Blogs</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="fw-bold">{{ range(20, 80)|random }}K</div>
+                            <small class="text-muted">Total Views</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Form validation and enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('blog_date').value = today;
+    
+    // Character counters
+    const titleInput = document.getElementById('blog_title');
+    const contentInput = document.getElementById('blog_content');
+    const titleCount = document.getElementById('titleCount');
+    const contentCount = document.getElementById('contentCount');
+    
+    titleInput.addEventListener('input', function() {
+        titleCount.textContent = this.value.length;
+        updatePreview();
+    });
+    
+    contentInput.addEventListener('input', function() {
+        contentCount.textContent = this.value.length;
+        updatePreview();
+    });
+    
+    // Update preview for other fields
+    document.getElementById('author_name').addEventListener('input', updatePreview);
+    document.getElementById('blog_date').addEventListener('change', updatePreview);
+    
+    // Form validation
+    const form = document.getElementById('blogForm');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+    
+    // Custom validation messages
+    titleInput.addEventListener('invalid', function() {
+        if (this.valueMissing) {
+            this.setCustomValidity('Please enter a title for your blog');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    contentInput.addEventListener('invalid', function() {
+        if (this.valueMissing) {
+            this.setCustomValidity('Please write some content for your blog');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Reset custom validity on input
+    [titleInput, contentInput].forEach(input => {
+        input.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+    });
+});
+
+function updatePreview() {
+    const authorName = document.getElementById('author_name').value || 'Author Name';
+    const blogTitle = document.getElementById('blog_title').value || 'Your Blog Title Will Appear Here';
+    const blogContent = document.getElementById('blog_content').value || 'Your blog content will be previewed here as you type...';
+    const blogDate = document.getElementById('blog_date').value || 'Publication Date';
+    
+    document.getElementById('previewAuthor').textContent = authorName;
+    document.getElementById('previewTitle').textContent = blogTitle;
+    document.getElementById('previewText').textContent = blogContent.substring(0, 200) + (blogContent.length > 200 ? '...' : '');
+    document.getElementById('previewDate').textContent = formatDate(blogDate);
+    
+    // Update author avatar
+    const avatar = document.querySelector('.author-avatar');
+    if (authorName.trim()) {
+        avatar.textContent = authorName.charAt(0).toUpperCase();
+    } else {
+        avatar.innerHTML = '<i class="fas fa-user"></i>';
+    }
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'Publication Date';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+}
+
+function saveDraft() {
+    // Get form data
+    const formData = new FormData(document.getElementById('blogForm'));
+    const draftData = {
+        author_name: formData.get('author_name'),
+        author_email: formData.get('author_email'),
+        blog_title: formData.get('blog_title'),
+        blog_content: formData.get('blog_content'),
+        blog_date: formData.get('blog_date'),
+        saved_at: new Date().toISOString()
+    };
+    
+    // Save to local storage
+    try {
+        localStorage.setItem('blog_draft', JSON.stringify(draftData));
+        
+        // Show success message
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success alert-dismissible fade show';
+        alert.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            Draft saved successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const container = document.querySelector('.container');
+        container.insertBefore(alert, container.firstChild);
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 3000);
+        
+    } catch (e) {
+        console.error('Failed to save draft:', e);
+        alert('Failed to save draft. Please try again.');
+    }
+}
+
+// Load draft on page load
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const savedDraft = localStorage.getItem('blog_draft');
+        if (savedDraft) {
+            const draftData = JSON.parse(savedDraft);
+            
+            // Show restore option
+            const restoreAlert = document.createElement('div');
+            restoreAlert.className = 'alert alert-info alert-dismissible fade show';
+            restoreAlert.innerHTML = `
+                <i class="fas fa-info-circle me-2"></i>
+                We found a saved draft from ${new Date(draftData.saved_at).toLocaleString()}.
+                <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="restoreDraft()">
+                    <i class="fas fa-undo me-1"></i>Restore Draft
+                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(restoreAlert, container.firstChild);
+        }
+    } catch (e) {
+        console.error('Failed to load draft:', e);
+    }
+});
+
+function restoreDraft() {
+    try {
+        const savedDraft = localStorage.getItem('blog_draft');
+        if (savedDraft) {
+            const draftData = JSON.parse(savedDraft);
+            
+            document.getElementById('author_name').value = draftData.author_name || '';
+            document.getElementById('author_email').value = draftData.author_email || '';
+            document.getElementById('blog_title').value = draftData.blog_title || '';
+            document.getElementById('blog_content').value = draftData.blog_content || '';
+            document.getElementById('blog_date').value = draftData.blog_date || '';
+            
+            // Update character counters and preview
+            document.getElementById('titleCount').textContent = (draftData.blog_title || '').length;
+            document.getElementById('contentCount').textContent = (draftData.blog_content || '').length;
+            updatePreview();
+            
+            // Remove the restore alert
+            const alert = document.querySelector('.alert-info');
+            if (alert) {
+                alert.remove();
+            }
+        }
+    } catch (e) {
+        console.error('Failed to restore draft:', e);
+        alert('Failed to restore draft. Please try again.');
+    }
+}
+
+// Clear draft after successful submission
+document.getElementById('blogForm').addEventListener('submit', function() {
+    if (this.checkValidity()) {
+        localStorage.removeItem('blog_draft');
+    }
+});
+</script>
+{% endblock %}

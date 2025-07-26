@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Blog App - Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Section -->
+    <div class="welcome-section fade-in-up">
+        <h1 class="page-title">
+            <i class="fas fa-blog me-3"></i>Welcome to Blog App
+        </h1>
+        <p class="welcome-subtitle">
+            Discover amazing stories, share your thoughts, and connect with fellow writers in our beautiful blogging platform.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('blogs') }}" class="btn btn-primary">
+                <i class="fas fa-newspaper me-2"></i>Explore Blogs
+            </a>
+            <a href="{{ url_for('add_blog') }}" class="btn btn-secondary">
+                <i class="fas fa-plus-circle me-2"></i>Write a Blog
+            </a>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-edit fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Easy Writing</h5>
+                    <p class="card-text">Create beautiful blog posts with our intuitive writing interface. Share your stories with the world effortlessly.</p>
+                    <a href="{{ url_for('add_blog') }}" class="card-link">
+                        <i class="fas fa-arrow-right me-1"></i>Start Writing
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Community</h5>
+                    <p class="card-text">Connect with fellow writers, share ideas, and build meaningful relationships within our growing community.</p>
+                    <a href="{{ url_for('blogs') }}" class="card-link">
+                        <i class="fas fa-arrow-right me-1"></i>Join Community
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-star fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Quality Content</h5>
+                    <p class="card-text">Discover high-quality, engaging content from passionate writers covering a wide range of topics and interests.</p>
+                    <a href="{{ url_for('blogs') }}" class="card-link">
+                        <i class="fas fa-arrow-right me-1"></i>Read Stories
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-fire me-2"></i>What's Trending
+            </h2>
+        </div>
+    </div>
+
+    <!-- Sample Cards Grid -->
+    <div class="blog-grid">
+        {% for i in range(6) %}
+        <div class="blog-card">
+            <div class="blog-meta">
+                <div class="author-avatar">
+                    {{ ['A', 'B', 'C', 'D', 'E', 'F'][i] }}
+                </div>
+                <div>
+                    <div class="fw-bold">Author {{ i + 1 }}</div>
+                    <small class="text-muted">{{ ['2 hours ago', '5 hours ago', '1 day ago', '2 days ago', '3 days ago', '1 week ago'][i] }}</small>
+                </div>
+            </div>
+            <h5 class="card-title">{{ ['Getting Started with Flask', 'Modern Web Design Trends', 'Python Best Practices', 'Building Responsive UIs', 'Database Optimization', 'Creative Writing Tips'][i] }}</h5>
+            <p class="card-text">{{ ['Learn the fundamentals of Flask web framework and build your first application.', 'Explore the latest trends in web design and create stunning user experiences.', 'Discover best practices for writing clean, maintainable Python code.', 'Master the art of creating responsive and mobile-friendly interfaces.', 'Optimize your database queries for better performance and scalability.', 'Unlock your creativity with proven techniques for engaging storytelling.'][i] }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('blogs') }}" class="card-link">
+                    <i class="fas fa-eye me-1"></i>Read More
+                </a>
+                <small class="text-muted">
+                    <i class="fas fa-heart me-1"></i>{{ [42, 38, 29, 51, 34, 47][i] }}
+                </small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mt-5">
+        <div class="card">
+            <div class="card-body py-5">
+                <h3 class="mb-3">Ready to Share Your Story?</h3>
+                <p class="mb-4">Join thousands of writers who have already started their blogging journey with us.</p>
+                <a href="{{ url_for('add_blog') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Create Your First Blog
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

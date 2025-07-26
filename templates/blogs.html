@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Blog App - All Blogs{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="page-title">
+            <i class="fas fa-newspaper me-3"></i>All Blogs
+        </h1>
+        <p class="lead text-white-50">Discover amazing stories from our community of writers</p>
+    </div>
+
+    {% if blogs %}
+        <!-- Blog Stats -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-blog fa-2x text-primary mb-2"></i>
+                        <h4 class="fw-bold">{{ blogs|length }}</h4>
+                        <p class="text-muted mb-0">Total Blog{{ 's' if blogs|length != 1 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                        <h4 class="fw-bold">{{ blogs|map(attribute='author')|map(attribute='name')|unique|list|length }}</h4>
+                        <p class="text-muted mb-0">Active Author{{ 's' if blogs|map(attribute='author')|map(attribute='name')|unique|list|length != 1 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="searchBlogs" placeholder="Search blogs by title, author, or content...">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-2 mt-md-0">
+                        <select class="form-select" id="sortBlogs">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="title">By Title</option>
+                            <option value="author">By Author</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blogs Grid -->
+        <div class="blog-grid" id="blogsContainer">
+            {% for blog in blogs %}
+            <article class="blog-card" data-title="{{ blog.title|lower }}" data-author="{{ blog.author.name|lower }}" data-content="{{ blog.content|lower }}" data-date="{{ blog.date }}">
+                <div class="blog-meta">
+                    <div class="author-avatar">
+                        {{ blog.author.name[0]|upper }}
+                    </div>
+                    <div>
+                        <div class="fw-bold">{{ blog.author.name }}</div>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i>{{ blog.date }}
+                        </small>
+                    </div>
+                </div>
+                
+                <h3 class="card-title mb-3">{{ blog.title }}</h3>
+                
+                <div class="blog-content mb-3">
+                    {% if blog.content|length > 150 %}
+                        <p class="card-text">{{ blog.content[:150] }}...</p>
+                        <div class="full-content" style="display: none;">
+                            <p class="card-text">{{ blog.content }}</p>
+                        </div>
+                        <button class="btn btn-link p-0 read-more-btn" onclick="toggleReadMore(this)">
+                            <i class="fas fa-chevron-down me-1"></i>Read More
+                        </button>
+                    {% else %}
+                        <p class="card-text">{{ blog.content }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="blog-actions">
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="likeBlog(this)">
+                            <i class="fas fa-heart me-1"></i><span class="like-count">{{ range(10, 100)|random }}</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="shareBlog('{{ blog.title }}')">
+                            <i class="fas fa-share me-1"></i>Share
+                        </button>
+                    </div>
+                    <small class="text-muted">
+                        <i class="fas fa-eye me-1"></i>{{ range(50, 500)|random }} views
+                    </small>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="text-center py-5" style="display: none;">
+            <div class="card">
+                <div class="card-body">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>No blogs found</h4>
+                    <p class="text-muted">Try adjusting your search criteria or browse all blogs.</p>
+                    <button class="btn btn-primary" onclick="clearSearch()">
+                        <i class="fas fa-refresh me-2"></i>Show All Blogs
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-5">
+            <div class="card">
+                <div class="card-body py-5">
+                    <i class="fas fa-blog fa-4x text-muted mb-4"></i>
+                    <h3>No Blogs Yet</h3>
+                    <p class="text-muted mb-4">Be the first to share your story with our community!</p>
+                    <a href="{{ url_for('add_blog') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i>Write the First Blog
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Back to Home -->
+    <div class="text-center mt-5">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Search functionality
+document.getElementById('searchBlogs').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    filterBlogs();
+});
+
+// Sort functionality
+document.getElementById('sortBlogs').addEventListener('change', function() {
+    sortBlogs(this.value);
+});
+
+function filterBlogs() {
+    const searchTerm = document.getElementById('searchBlogs').value.toLowerCase();
+    const blogCards = document.querySelectorAll('.blog-card');
+    let visibleCount = 0;
+
+    blogCards.forEach(card => {
+        const title = card.dataset.title;
+        const author = card.dataset.author;
+        const content = card.dataset.content;
+        
+        if (title.includes(searchTerm) || author.includes(searchTerm) || content.includes(searchTerm)) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // Show/hide no results message
+    const noResults = document.getElementById('noResults');
+    if (visibleCount === 0 && searchTerm !== '') {
+        noResults.style.display = 'block';
+    } else {
+        noResults.style.display = 'none';
+    }
+}
+
+function sortBlogs(sortBy) {
+    const container = document.getElementById('blogsContainer');
+    const blogCards = Array.from(container.querySelectorAll('.blog-card'));
+    
+    blogCards.sort((a, b) => {
+        switch(sortBy) {
+            case 'newest':
+                return new Date(b.dataset.date) - new Date(a.dataset.date);
+            case 'oldest':
+                return new Date(a.dataset.date) - new Date(b.dataset.date);
+            case 'title':
+                return a.dataset.title.localeCompare(b.dataset.title);
+            case 'author':
+                return a.dataset.author.localeCompare(b.dataset.author);
+            default:
+                return 0;
+        }
+    });
+    
+    // Re-append sorted cards
+    blogCards.forEach(card => container.appendChild(card));
+}
+
+function toggleReadMore(button) {
+    const card = button.closest('.blog-card');
+    const fullContent = card.querySelector('.full-content');
+    const shortContent = card.querySelector('.card-text');
+    
+    if (fullContent.style.display === 'none') {
+        fullContent.style.display = 'block';
+        shortContent.style.display = 'none';
+        button.innerHTML = '<i class="fas fa-chevron-up me-1"></i>Read Less';
+    } else {
+        fullContent.style.display = 'none';
+        shortContent.style.display = 'block';
+        button.innerHTML = '<i class="fas fa-chevron-down me-1"></i>Read More';
+    }
+}
+
+function likeBlog(button) {
+    const likeCount = button.querySelector('.like-count');
+    const currentCount = parseInt(likeCount.textContent);
+    const icon = button.querySelector('i');
+    
+    if (button.classList.contains('liked')) {
+        likeCount.textContent = currentCount - 1;
+        button.classList.remove('liked');
+        icon.classList.remove('fas');
+        icon.classList.add('far');
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-outline-primary');
+    } else {
+        likeCount.textContent = currentCount + 1;
+        button.classList.add('liked');
+        icon.classList.remove('far');
+        icon.classList.add('fas');
+        button.classList.remove('btn-outline-primary');
+        button.classList.add('btn-primary');
+    }
+}
+
+function shareBlog(title) {
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            url: window.location.href
+        });
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Blog link copied to clipboard!');
+        });
+    }
+}
+
+function clearSearch() {
+    document.getElementById('searchBlogs').value = '';
+    filterBlogs();
+}
+</script>
+{% endblock %}
